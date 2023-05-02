@@ -1,4 +1,4 @@
-# Slide Puzzle
+# Slide-Puzzle
 - [x] fix the bug where if you click outside the main board, the game crashes
 - [ ] 3x3, 4x4 and 5x5 slide puzzle board options
 - [ ] main menu that has "start" and "quit"
