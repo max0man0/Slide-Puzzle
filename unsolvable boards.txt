@@ -1,3 +1,0 @@
-A txt file for debugging purposes.
-
-[3, 2, 0, 4, 5, 6, 8, 7, 1]

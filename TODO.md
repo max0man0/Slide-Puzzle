@@ -6,3 +6,4 @@
 - [ ] "You win" after winning
 - [ ] pause button (and make esc pause)
 - [x] fix the bug where square of position 3 can slide to position 2
+- [ ] fix a bug where the board is sometimes unsolvable
