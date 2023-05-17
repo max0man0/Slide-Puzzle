@@ -5,4 +5,4 @@
 - [ ] timer (difficulty) -> easy, medium, hard
 - [ ] "You win" after winning
 - [ ] pause button (and make esc pause)
-- [ ] fix the bug where square of position 3 can slide to position 2
+- [x] fix the bug where square of position 3 can slide to position 2
