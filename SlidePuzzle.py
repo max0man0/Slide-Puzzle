@@ -14,6 +14,8 @@ pg.display.set_caption("Slide Puzzle")
 
 FPS = 60
 
+TEMP_BOARD_LENGTH = 9
+
 SLIDE_SQUARE_COLOR = pg.Color("brown1")
 BACKGROUND_COLOR = pg.Color("white")
 MAIN_BOARD_COLOR = pg.Color("gray80")
@@ -35,7 +37,7 @@ RESET_BTN_TOP = RESET_BTN_CENTER_Y - RESET_BTN_HEIGHT//2
 def main() -> None:
     clock = pg.time.Clock()
     running = True
-    board = generate_solvable_board()
+    board = generate_solvable_board(TEMP_BOARD_LENGTH)
 
     while running:
         clock.tick(FPS)  # Make sure to cap the FPS of the game to 60
@@ -49,7 +51,7 @@ def main() -> None:
                     handle_square_sliding(mouse_pos, board)
                 # if reset button was click
                 elif RESET_BTN_LEFT <= mouse_pos[0] <= RESET_BTN_LEFT + RESET_BTN_WIDTH and RESET_BTN_TOP <= mouse_pos[1] <= RESET_BTN_TOP + RESET_BTN_HEIGHT:
-                    board = generate_solvable_board()
+                    board = generate_solvable_board(TEMP_BOARD_LENGTH)
 
         draw_window(board)
 
@@ -79,7 +81,7 @@ def generate_solvable_board(board_length: int) -> List[int]:
     board.append(0)
 
     # Perform a random number of valid moves (odd count) to shuffle the board
-    num_moves = random.randint(15, 99)
+    num_moves = random.randint(20, 100)
     if num_moves % 2 == 0:
         num_moves += 1
     
@@ -94,19 +96,23 @@ def is_perfect_square(num: int) -> bool:
     return num == math.isqrt(num) ** 2
 
 def get_valid_moves(board: List[int]) -> List[Tuple[int, int]]:
-    row_count = int(math.sqrt(len(board)))
+    board_length = len(board)
+    row_count = int(math.sqrt(board_length))
     empty_index = board.index(0)
     valid_moves = []
 
-    # FIXME check if it works
-    if empty_index % row_count != 0: # 
-        valid_moves.append((empty_index, empty_index - 1))  # Move empty square to the left
-    if empty_index % row_count != 2:
-        valid_moves.append((empty_index, empty_index + 1))  # Move empty square to the right
-    if empty_index >= 3:
-        valid_moves.append((empty_index, empty_index - row_count))  # Move empty square upwards
-    if empty_index < 6:
-        valid_moves.append((empty_index, empty_index + row_count))  # Move empty square downwards
+    # if there is a square left of the empty square (left of the empty square is in the board range)
+    if 0 <= empty_index - 1 <= board_length - 1:
+        valid_moves.append((empty_index, empty_index - 1))
+    # if there is a square right of the empty square
+    if 0 <= empty_index + 1 <= board_length - 1:
+        valid_moves.append((empty_index, empty_index + 1))
+    # if there is a square above the empty square
+    if 0 <= empty_index - row_count <= board_length - 1:
+        valid_moves.append((empty_index, empty_index - row_count))
+    # if there is a square below the empty square
+    if 0 <= empty_index + row_count <= board_length - 1:
+        valid_moves.append((empty_index, empty_index + row_count))
 
     return valid_moves
 
@@ -134,22 +140,22 @@ def handle_square_sliding(square_pos: Tuple[int, int], board: List[int]) -> None
 
     # Swap the empty square number (0) with the square number gotten from `square_pos`
     if empty_sq_index % row_count == 0:  # if the empty square is at the left-most column
-        # Swap if swap is legal
+        # Swap if legal
         if sq_index in (empty_sq_index + 1, empty_sq_index + row_count, empty_sq_index - row_count):
             board[empty_sq_index], board[sq_index] = board[sq_index], board[empty_sq_index]
     elif empty_sq_index % row_count == row_count - 1:  # if the empty square is at the right-most column
-        # Swap if swap is legal
+        # Swap if legal
         if sq_index in (empty_sq_index - 1, empty_sq_index + row_count, empty_sq_index - row_count):
             board[empty_sq_index], board[sq_index] = board[sq_index], board[empty_sq_index]
     else:  # if the empty square is at a column in the middle
-        # Swap if swap is legal
+        # Swap if legal
         if sq_index in (empty_sq_index - 1, empty_sq_index + 1, empty_sq_index + row_count, empty_sq_index - row_count):
             board[empty_sq_index], board[sq_index] = board[sq_index], board[empty_sq_index]
 
 
 def get_partition(x: int, min_number: int, max_number: int, partition_count: int) -> int:
     """
-    Divide the range `min_number`-`max_number` (both ends excluded) to `partition_count` partitions and find in the index of the partition that `x` is in
+    Divide the range `min_number`-`max_number` (both ends excluded) to `partition_count` partitions and find in index of the partition that `x` is in
 
     Parameters
     ----------
@@ -214,7 +220,7 @@ def draw_window(board: List[int]) -> None:
         If `board` is not a list of integers
 
     ValueError
-        If the number of integers in `board` is not 9
+        If the number of integers in `board` is not a perfect square
     """
 
     # Window background color
@@ -222,10 +228,10 @@ def draw_window(board: List[int]) -> None:
 
     # Validate parameter
     if not isinstance(board, list) or not all([isinstance(element, int) for element in board]):
-        raise TypeError("numbered_squares must be a list of integers")
+        raise TypeError("board must be a list of integers")
 
-    if len(board) != 9:
-        raise ValueError("numbered_squares must have 9 integers")
+    if not is_perfect_square(len(board)):
+        raise ValueError("The number of integers in the board must be a perfect square")
 
     # Draw the main board and its background color
     main_board = main_board_color_rect = pg.Rect(
@@ -240,8 +246,8 @@ def draw_window(board: List[int]) -> None:
             # Draw the slide squares
             slide_square_side_length = MAIN_BOARD_SIDE_LENGTH // math.sqrt(
                 len(board))
-            slide_square = slide_square_color_rect = pg.Rect(main_board.left+((pos % 3)*slide_square_side_length), main_board.top+(
-                (pos//3)*slide_square_side_length), slide_square_side_length, slide_square_side_length)
+            slide_square = slide_square_color_rect = pg.Rect(MAIN_BOARD_LEFT + ((pos % 3)*slide_square_side_length), MAIN_BOARD_TOP + (
+                (pos // 3)*slide_square_side_length), slide_square_side_length, slide_square_side_length)
             pg.draw.rect(WIN, SLIDE_SQUARE_COLOR, slide_square_color_rect)
             pg.draw.rect(WIN, BORDER_COLOR, slide_square, 1)
 
@@ -252,6 +258,7 @@ def draw_window(board: List[int]) -> None:
             slide_square_number_rect.center = slide_square.center
             WIN.blit(slide_square_number, slide_square_number_rect)
 
+    # This is a temporary feature
     # Draw the reset button
     reset_btn = pg.Rect(RESET_BTN_LEFT, RESET_BTN_TOP, RESET_BTN_WIDTH, RESET_BTN_HEIGHT)
     pg.draw.rect(WIN, BORDER_COLOR, reset_btn, 2)
