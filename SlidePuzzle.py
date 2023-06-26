@@ -1,6 +1,7 @@
 import pygame as pg
 import random
 import math
+import os
 from typing import Tuple, List, Any
 
 # For dev purposes only
@@ -33,6 +34,9 @@ RESET_BTN_CENTER_Y = ((MAIN_BOARD_TOP + MAIN_BOARD_SIDE_LENGTH) + HEIGHT) // 2
 RESET_BTN_LEFT = RESET_BTN_CENTER_X - RESET_BTN_WIDTH//2
 RESET_BTN_TOP = RESET_BTN_CENTER_Y - RESET_BTN_HEIGHT//2
 
+PAUSE_IMG_PATH = os.path.join('Images', 'pause.png')
+PAUSE_IMG_TOP = PAUSE_IMG_LEFT = 20
+PAUSE_IMG = pg.image.load(PAUSE_IMG_PATH).convert_alpha()
 
 def main() -> None:
     clock = pg.time.Clock()
@@ -258,6 +262,9 @@ def draw_window(board: List[int]) -> None:
             slide_square_number_rect.center = slide_square.center
             WIN.blit(slide_square_number, slide_square_number_rect)
 
+    # Draw the pause button
+    WIN.blit(PAUSE_IMG, (PAUSE_IMG_LEFT, PAUSE_IMG_TOP))
+
     # This is a temporary feature
     # Draw the reset button
     reset_btn = pg.Rect(RESET_BTN_LEFT, RESET_BTN_TOP, RESET_BTN_WIDTH, RESET_BTN_HEIGHT)
@@ -268,7 +275,6 @@ def draw_window(board: List[int]) -> None:
     reset_btn_label_rect = reset_btn_label.get_rect()
     reset_btn_label_rect.center = reset_btn.center
     WIN.blit(reset_btn_label, reset_btn_label_rect)
-
 
     pg.display.update()
 
