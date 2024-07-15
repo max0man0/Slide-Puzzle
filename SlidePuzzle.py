@@ -81,6 +81,7 @@ def generate_solvable_board(board_length: int) -> List[int]:
     if not is_perfect_square(board_length):
         raise ValueError(f"`board_length` {board_length} is not a perfect square")
 
+    # Generate a solved board
     board = list(range(1, board_length))
     board.append(0)
 
