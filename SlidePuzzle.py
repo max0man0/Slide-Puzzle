@@ -47,10 +47,14 @@ def main() -> None:
             elif event.type == pg.MOUSEBUTTONUP:
                 mouse_pos = pg.mouse.get_pos()
                 # if the mouse clicked in the main board boundry
-                if MAIN_BOARD_LEFT <= mouse_pos[0] <= MAIN_BOARD_LEFT + MAIN_BOARD_SIDE_LENGTH and MAIN_BOARD_TOP <= mouse_pos[1] <= MAIN_BOARD_TOP + MAIN_BOARD_SIDE_LENGTH:
+                if (MAIN_BOARD_LEFT <= mouse_pos[0] <= MAIN_BOARD_LEFT + MAIN_BOARD_SIDE_LENGTH and \
+                    MAIN_BOARD_TOP <= mouse_pos[1] <= MAIN_BOARD_TOP + MAIN_BOARD_SIDE_LENGTH
+                ):
                     handle_square_sliding(mouse_pos, board)
                 # if reset button was click
-                elif RESET_BTN_LEFT <= mouse_pos[0] <= RESET_BTN_LEFT + RESET_BTN_WIDTH and RESET_BTN_TOP <= mouse_pos[1] <= RESET_BTN_TOP + RESET_BTN_HEIGHT:
+                elif (RESET_BTN_LEFT <= mouse_pos[0] <= RESET_BTN_LEFT + RESET_BTN_WIDTH and \
+                    RESET_BTN_TOP <= mouse_pos[1] <= RESET_BTN_TOP + RESET_BTN_HEIGHT      
+                ):
                     board = generate_solvable_board(TEMP_BOARD_LENGTH)
 
         draw_window(board)
@@ -101,7 +105,7 @@ def get_valid_moves(board: List[int]) -> List[Tuple[int, int]]:
     empty_index = board.index(0)
     valid_moves = []
 
-    # if there is a square left of the empty square (left of the empty square is in the board range)
+    # if there is a square left of the empty square (if left of the empty square is in the board range)
     if 0 <= empty_index - 1 <= board_length - 1:
         valid_moves.append((empty_index, empty_index - 1))
     # if there is a square right of the empty square
